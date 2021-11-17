@@ -1,0 +1,7 @@
+*/__pycache__
+.idea
+websocketd
+*.log
+*.png
+instance/config.py
+instance/testconfig.py
