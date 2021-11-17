@@ -8,6 +8,21 @@ import os
 bp = Blueprint('lookup_page', __name__, url_prefix='')
 
 
+def sanitize(astr):
+
+    allowed = [" ", "'", "!", "?", "@"]
+    cnt = 0
+    out = ""
+    for x in astr:
+        y = ord(x)
+        if (64 < y < 91) or (96 < y < 123) or (47 < y < 58) or x in allowed:
+            out += x
+            cnt += 1
+        if cnt > 256:
+            break
+    return out
+
+
 @bp.route('/', methods=('GET', 'POST'))
 def begin():
 
@@ -75,15 +90,16 @@ def store():
 
     if request.method == 'POST':
         print(request.form)
+        san = sanitize(request.form["msg"])
         with open(current_app.config["SHOP_FILE"], "a") as f:
             if request.form["type"] == "sendmessage":
                 channelid = current_app.config["MESSAGE_CHANNELS"][request.form["chan"]]
-                f.write(request.form["type"] + "||" + str(uid) + "||" + str(channelid) + "||" + request.form["msg"] + os.linesep)
+                f.write(request.form["type"] + "||" + str(uid) + "||" + str(channelid) + "||" + san + os.linesep)
                 session["balance"] -= 1000
                 # we need to manually modify the displayed balance on the basis of what was just submitted
                 # because there's a delay in snek reading the shop file and writing the change to the db
             elif request.form["type"] == "namechange":
-                f.write(request.form["type"] + "||" + str(uid) + "||" + request.form["msg"] + os.linesep)
+                f.write(request.form["type"] + "||" + str(uid) + "||" + san + os.linesep)
                 session["balance"] -= 10000
             elif request.form["type"] == "ssrbirb":
                 channelid = current_app.config["MESSAGE_CHANNELS"][request.form["chan"]]
