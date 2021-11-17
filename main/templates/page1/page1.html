@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Snekbux store registration page{% endblock %}</h1>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock %}
+
+{% block content %}
+
+<p>Enter the code that Snek has DM'ed you to authenticate. (Type "snek shop_register" on Discord to receive the code.)</p>
+
+  <form method="post">
+    <label for="qry">Snek code:</label>
+    <input name="qry" id="qry" autofocus="autofocus" required>
+    <input type="submit" value="submit">
+  </form>
+
+
+{% endblock %}
+

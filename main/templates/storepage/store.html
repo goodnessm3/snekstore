@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Snekbux store{% endblock %}</h1>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% endblock %}
+
+{% block content %}
+<body>
+<p>Hello {{ session["uname"] }}.
+<br>
+Your balance is {{ session ["balance"] }} Snekbux.</p>
+
+
+  <form method="post">
+    <label for="msg">send message from snek (1,000 snekbux):</label>
+    <input name="msg" id="msg" autofocus="autofocus" size="50">
+    <label for="chan">Destination channel:</label>
+    <select name="chan" id ="chan">
+      {% for q in chans %}
+      <option value="{{ q }}">{{ q }}</option>
+      {% endfor %}
+    </select>
+    <input type="hidden" name="type" value="sendmessage">
+    <input type="submit" value="send">
+  </form>
+
+  <form method="post">
+    <label for="msg2">Change Snek's nickname (10,000 snekbux)</label>
+    <input name="msg" id="msg2">
+    <input type="hidden" name="type" value="namechange">
+    <input type="submit" value="submit">
+  </form>
+
+  <form method="post">
+    <label for="chan2">Post the SSR birb in a channel (75,000 snekbux)</label>
+    <select name="chan" id ="chan2">
+      {% for q in chans %}
+      <option value="{{ q }}">{{ q }}</option>
+      {% endfor %}
+    </select>
+    <input type="hidden" name="type" value="ssrbirb">
+    <input type="submit" value="submit">
+  </form>
+
+
+<p>Other features coming Q2 2025!</p>
+<p>I know it looks awful but I don't know HTML and CSS pls help</p>
+</body>
+{% endblock %}

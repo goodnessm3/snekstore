@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Websocketd demo{% endblock %}</h1>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script>
+  // from the websocketd documentation
+  // helper function: log message to screen
+  function log(msg) {
+    document.getElementById('log').textContent += msg + '\n';
+  }
+
+  // setup websocket with callbacks
+  //var ws = new WebSocket('ws://localhost:8080/');  // the old line not proxied
+  var ws = new WebSocket('ws://localhost/ws');  // proxied thru same port with nginx
+  // note ws at the END of the URL so nginx can redirect appropriately
+  // there must be a way to base this on the prefix instead
+  ws.onopen = function() {
+    log('CONNECT');
+  };
+  ws.onclose = function() {
+    log('DISCONNECT');
+  };
+  ws.onmessage = function(event) {
+    log('MESSAGE: ' + event.data);
+  };
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+<p>Stdout streamed from tail -f, using a websocket:</p>
+
+<pre id="log"></pre>
+
+{% endblock %}
+
