@@ -26,6 +26,7 @@ def sanitize(astr):
 @bp.route('/', methods=('GET', 'POST'))
 def begin():
 
+    session.permanent = True
     error = None
     db = get_db()
     cur = db.cursor()
@@ -67,6 +68,7 @@ def begin():
 @bp.route('/store', methods=('GET', 'POST'))
 def store():
 
+    session.permanent = True
     if not "tok" in session:
         return redirect(url_for("lookup_page.begin"))
         # send user to registration page if no cookie

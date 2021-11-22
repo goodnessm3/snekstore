@@ -7,7 +7,7 @@ def create_app(test_config=None):
 
     app = Flask(__name__, instance_relative_config=True)
     # todo: move config into separaate non-git-tracked files
-    # app.config.from_pyfile('testconfig.py')
+    #app.config.from_pyfile('testconfig.py')
 
     if test_config is None:
         # load the instance config, if it exists, when not testing
