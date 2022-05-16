@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Snek card trading{% endblock %}</h1>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+.centre {
+  margin: auto;
+  padding: 10px;
+}
+
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 45%;
+
+  padding: 20px;
+  background: aliceblue;
+}
+
+.column2 {
+  float: right;
+  width: 45%;
+
+  padding: 20px;
+  background: whitesmoke;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+textarea {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  transform: translate(0%, 15%);
+}
+
+</style>
+
+<script>
+
+let selected = [];
+
+    function myClick(ser){
+        val = ser.dataset.serial;
+        if (ser.dataset.clicked == "false") {
+            ser.dataset.clicked = "true";
+            selected.push(val);
+            ser.style.border = "8px dotted red";
+            } else {
+            ser.style.border = "";
+            ser.dataset.clicked = "false";
+            ind = selected.indexOf(val);
+            selected.splice(ind,1);
+            };
+        console.log(selected);
+        document.getElementById("commandbox").value = "snek trade <@!{{ target_id }}> " + selected.join(" ");
+    }
+
+    function clearBox(){
+        document.getElementById("commandbox").value = "";
+    }
+
+
+</script>
+
+
+{% endblock %}
+
+{% block content %}
+<body onLoad="clearBox()">
+
+<h2>Select the cards you propose to trade, and paste this command into discord once you have selected the cards. The other person will choose whether to accept the trade. MAXIMUM of 9 cards to give/receive per trade.</h2>
+<textarea id="commandbox" name="commandbox" style="height:20px; width:550px;">
+Snek trade <@{{ target_id }}></textarea>
+
+<div class="row">
+
+    <div class="column">
+        <p>{{ leftname }}'s cards</p>
+        {% for q in left %}
+      <img src="http://raibu.streams.moe/cards/{{ q }}.jpg" data-serial="{{ q }}" onclick="myClick(this)" data-clicked="false">
+      {% endfor %}
+    </div>
+
+    <div class="column2">
+        <p>{{ rightname }}'s cards</p>
+        {% for q in right %}
+      <img src="http://raibu.streams.moe/cards/{{ q }}.jpg" data-serial="{{ q }}" onclick="myClick(this)" data-clicked="false">
+      {% endfor %}
+    </div>
+</div>
+
+</body>
+{% endblock %}

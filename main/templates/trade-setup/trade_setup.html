@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Snek card trading{% endblock %}</h1>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+
+
+</style>
+
+
+{% endblock %}
+
+{% block content %}
+<body>
+
+  <form method="POST">
+    <label for="trade_from">Who are YOU?</label>
+    <select name="s1" id ="trade_from">
+      {% for q in users %}
+      <option value="{{ q }}">{{ q }}</option>
+      {% endfor %}
+    </select>
+      <label for="trade_to">With WHOM will you trade?</label>
+      <select name="s2" id ="trade_to">
+      {% for q in users %}
+      <option value="{{ q }}">{{ q }}</option>
+      {% endfor %}
+    </select>
+
+    <input type="submit" value="send">
+  </form>
+
+
+
+</body>
+{% endblock %}

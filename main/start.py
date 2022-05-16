@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify, current_app
+from flask import Blueprint, flash, g, redirect, render_template, request, session, url_for, jsonify, current_app, make_response
 import main.fxns
 import main.random_image
 from main.db import get_db
@@ -108,7 +108,102 @@ def store():
                 f.write(request.form["type"] + "||" + str(uid) + "||" + str(channelid) + os.linesep)
                 session["balance"] -= 75000
 
-
-
     return render_template('storepage/store.html',
                            chans=[x for x in current_app.config["MESSAGE_CHANNELS"].keys()])
+
+
+@bp.route('/trade_setup', methods=('GET', 'POST'))
+def trade_setup():
+
+    db = get_db()
+    cur = db.cursor()
+
+    if request.method == "GET":
+        print("get on trade setup page")
+        u = cur.execute('''SELECT screen_name FROM names''')
+        u = [x[0] for x in cur.fetchall()]
+        return render_template("trade-setup/trade_setup.html", users=u)
+
+    elif request.method == "POST":
+        print("did post")
+        print(request.form)
+
+        cur.execute('''SELECT serial FROM cards WHERE owner = (
+                    SELECT uid FROM names WHERE screen_name = ?
+                    )''', (request.form["s1"],))
+        left = [str(x[0]).zfill(5) for x in cur.fetchall()]
+
+        cur.execute('''SELECT serial FROM cards WHERE owner = (
+                            SELECT uid FROM names WHERE screen_name = ?
+                            )''', (request.form["s2"],))
+        right = [str(x[0]).zfill(5) for x in cur.fetchall()]
+
+        cur.execute('''SELECT uid FROM names WHERE screen_name = ?''', (request.form["s1"],))
+        tid = cur.fetchone()[0]
+
+        print(left)
+        print(right)
+        #return render_template("trade-setup/trade_setup.html")
+        return render_template("trade/trade.html", left=left,
+                               right=right,
+                               leftname=request.form["s1"],
+                               rightname=request.form["s2"],
+                               target_id=tid)
+        #return render_template("trade/trade.html")
+
+
+@bp.route('/trade', methods=('GET', 'POST'))
+def trade():
+
+    print("in trade fxn")
+    print(request)
+    if request.method == "POST":
+        print("post on trade page")
+        print(request.form)
+        return render_template("trade/trade.html")
+    elif request.method == "GET":
+        print("get on trade page")
+        return render_template("trade/trade.html")
+
+@bp.route('/cards/<string:uid>', methods=('GET',))
+def cards(uid):
+
+    db = get_db()
+    cur = db.cursor()
+
+    cur.execute('''SELECT serial FROM cards WHERE owner = ?''', (uid,))
+    res = cur.fetchall()
+    return jsonify([x[0] for x in res])
+
+@bp.route('/contested_tags', methods=('GET',))
+def get_contested_tags():
+
+    out = {}
+    db = get_db()
+    cur = db.cursor()
+    cur.execute('''SELECT tag FROM stonks GROUP BY tag HAVING COUNT(tag) > 1''')
+    # finds the names of tags that appear more than once, i.e. more than one user has bought them
+    res = list(cur.fetchall())
+    for tag in res:
+        print(tag)
+        t = tag[0]
+        cur.execute('''SELECT uid, paid FROM stonks WHERE tag = ?''', (t,))
+        out[t] = list(cur.fetchall())
+
+    return jsonify(out)  # sqlite returns a list of single-value tuples
+
+
+@bp.route('/single_tags', methods=('GET',))
+def get_single_tags():
+
+    db = get_db()
+    cur = db.cursor()
+    cur.execute('''SELECT tag FROM stonks GROUP BY tag HAVING COUNT(tag) = 1''')
+    res = cur.fetchall()
+    return jsonify([x[0] for x in res])
+
+
+@bp.route('/test', methods=('GET',))
+def test():
+
+    return jsonify(["a","b","c"])
